@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug"
+			"value" : "c:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -575,7 +575,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -647,7 +647,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP"
+			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1279,7 +1279,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug"
+			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug"
 		},
 		{
 			"name" : "TSP_IS_TOP_LEVEL",
@@ -1303,7 +1303,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP"
+			"value" : "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo"
 		},
 		{
 			"name" : "_CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED",

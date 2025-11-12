@@ -32,17 +32,18 @@ path_t StageState::get_path() {
  * @return Vector of minimum values in row.
  */
 std::vector<cost_t> CostMatrix::get_min_values_in_rows() const {
+    std::vector<cost_t> min_values;
     std::size_t w = matrix_.size();
     std::size_t k = matrix_[0].size();
-    std::vector<int> min = {};
     for(size_t i =0; i<w; ++i){
-      min.push_back(0);
+      min_values.push_back(0);
       for(size_t j=0; j<k; ++j){
-        if (min[j]>matrix_[i][j]){
-          min[j] = matrix_[i][j];
+        if (min_values[i]>matrix_[i][j]){
+          min_values[i] = matrix_[i][j];
         }
       }
     }
+    return min_values;
 }
 
 /**
@@ -50,7 +51,16 @@ std::vector<cost_t> CostMatrix::get_min_values_in_rows() const {
  * @return Sum of values reduced in rows.
  */
 cost_t CostMatrix::reduce_rows() {
-    throw;  // TODO: Implement it!
+    std::vector<cost_t> min = get_min_values_in_rows();
+    std::size_t w = size();
+    std::size_t k = matrix_[0].size();
+    for(size_t i =0; i<w; ++i){
+      for(size_t j=0; j<k; ++j){
+        matrix_[i][j] -= min[i];
+      }
+    }
+    cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));
+    return lb;
 }
 
 /**
@@ -59,7 +69,17 @@ cost_t CostMatrix::reduce_rows() {
  */
 std::vector<cost_t> CostMatrix::get_min_values_in_cols() const {
     std::vector<cost_t> min_values;
-    throw;  // TODO: Implement it!
+    std::size_t w = matrix_.size();
+    std::size_t k = matrix_[0].size();
+    for(size_t i =0; i<k; ++i){
+        min_values.push_back(0);
+        for(size_t j=0; j<w; ++j){
+            if (min_values[i]>matrix_[i][j]){
+                min_values[i] = matrix_[i][j];
+            }
+        }
+    }
+    return min_values;
 }
 
 /**
@@ -67,7 +87,16 @@ std::vector<cost_t> CostMatrix::get_min_values_in_cols() const {
  * @return Sum of values reduced in columns.
  */
 cost_t CostMatrix::reduce_cols() {
-    throw;  // TODO: Implement it!
+    std::vector<cost_t> min = get_min_values_in_cols();
+    std::size_t w = size();
+    std::size_t k = matrix_[0].size();
+    for(size_t i =0; i<k; ++i){
+        for(size_t j=0; j<w; ++j){
+            matrix_[i][j] -= min[i];
+        }
+    }
+    cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));
+    return lb;
 }
 
 /**
@@ -77,7 +106,7 @@ cost_t CostMatrix::reduce_cols() {
  * @return The sum of minimal values in row and col, excluding the intersection value.
  */
 cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
-    throw;  // TODO: Implement it!
+    return matrix_[row][col];
 }
 
 /* PART 2 */

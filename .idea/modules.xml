@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TSP.iml" filepath="$PROJECT_DIR$/.idea/TSP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TSP_zpo.iml" filepath="$PROJECT_DIR$/.idea/TSP_zpo.iml" />
     </modules>
   </component>
 </project>

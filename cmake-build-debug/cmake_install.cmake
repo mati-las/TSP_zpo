@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP
+# Install script for directory: C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -52,6 +52,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

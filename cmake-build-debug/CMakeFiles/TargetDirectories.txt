@@ -1,3 +1,3 @@
-C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug/CMakeFiles/TSP.dir
-C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug/CMakeFiles/TSP.dir
+C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Lenovo/Desktop/studia/sem 3/zaawansowane_programowanie_obiektowe/z programowanie obiektowe/TSP_zpo/cmake-build-debug/CMakeFiles/rebuild_cache.dir

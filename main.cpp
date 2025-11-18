@@ -51,7 +51,6 @@ int main() {
         }
         std::cout << "\n";
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -60,9 +59,10 @@ int main() {
 // jesli chce uruchomic testy, musisz jednoczesnjiej zakomentowac kod powyzej
 #include "gtest/gtest.h"
 
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
 */
+

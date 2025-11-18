@@ -32,18 +32,19 @@ path_t StageState::get_path() {
  * @return Vector of minimum values in row.
  */
 std::vector<cost_t> CostMatrix::get_min_values_in_rows() const {
-    std::vector<cost_t> min_values;
-    std::size_t w = matrix_.size();
-    std::size_t k = matrix_[0].size();
-    for(size_t i =0; i<w; ++i){
-      min_values.push_back(0);
-      for(size_t j=0; j<k; ++j){
-        if (min_values[i]>matrix_[i][j]){
-          min_values[i] = matrix_[i][j];
+    std::size_t n = size();
+    std::vector<cost_t> min_values(n);
+
+    for (std::size_t c = 0; c < n; ++c) {
+        cost_t mn = INF;
+        for (std::size_t r = 0; r < n; ++r) {
+            if (!is_inf(matrix_[r][c]) && matrix_[r][c] < mn){
+                mn = matrix_[c][r];
+            }
         }
-      }
-    }
-    return min_values;
+        min_values[c] = mn;
+        }
+        return min_values;
 }
 
 /**
@@ -56,7 +57,7 @@ cost_t CostMatrix::reduce_rows() {
     std::size_t k = matrix_[0].size();
     for(size_t i =0; i<w; ++i){
       for(size_t j=0; j<k; ++j){
-        matrix_[i][j] -= min[i];
+        if (!is_inf(matrix_[i][j])) matrix_[i][j] -= min[i];
       }
     }
     cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));
@@ -68,16 +69,17 @@ cost_t CostMatrix::reduce_rows() {
  * @return Vector of minimum values in columns.
  */
 std::vector<cost_t> CostMatrix::get_min_values_in_cols() const {
-    std::vector<cost_t> min_values;
-    std::size_t w = matrix_.size();
-    std::size_t k = matrix_[0].size();
-    for(size_t i =0; i<k; ++i){
-        min_values.push_back(0);
-        for(size_t j=0; j<w; ++j){
-            if (min_values[i]>matrix_[i][j]){
-                min_values[i] = matrix_[i][j];
+    std::size_t n = size();
+    std::vector<cost_t> min_values(n, INF);
+
+    for (std::size_t c = 0; c < n; ++c) {
+        cost_t mn = INF;
+        for (std::size_t r = 0; r < n; ++r) {
+            if (!is_inf(matrix_[r][c]) && matrix_[r][c] < mn) {
+                mn = matrix_[r][c];
             }
         }
+        min_values[c] = (mn == INF) ? 0 : mn;
     }
     return min_values;
 }
@@ -92,7 +94,7 @@ cost_t CostMatrix::reduce_cols() {
     std::size_t k = matrix_[0].size();
     for(size_t i =0; i<k; ++i){
         for(size_t j=0; j<w; ++j){
-            matrix_[i][j] -= min[i];
+          if(!is_inf(matrix_[i][j]) matrix_[i][j] -= min[i];
         }
     }
     cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));

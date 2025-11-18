@@ -42,7 +42,7 @@ std::vector<cost_t> CostMatrix::get_min_values_in_rows() const {
                 mn = matrix_[c][r];
             }
         }
-        min_values[c] = mn;
+        min_values[c] = (mn == INF) ? 0 : mn;
         }
         return min_values;
 }
@@ -70,7 +70,7 @@ cost_t CostMatrix::reduce_rows() {
  */
 std::vector<cost_t> CostMatrix::get_min_values_in_cols() const {
     std::size_t n = size();
-    std::vector<cost_t> min_values(n, INF);
+    std::vector<cost_t> min_values(n);
 
     for (std::size_t c = 0; c < n; ++c) {
         cost_t mn = INF;
@@ -108,7 +108,23 @@ cost_t CostMatrix::reduce_cols() {
  * @return The sum of minimal values in row and col, excluding the intersection value.
  */
 cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
-    return matrix_[row][col];
+    std::size_t n = size();
+    cost_t min_w = INF;
+    cost_t min_k = INF;
+
+    for(std::size_t c = 0; c < n; ++c){
+      if(matrix_[row][c] < min_w && matrix_[row][c] != INF && c != col){
+        min_w = matrix_[row][c];
+      }
+    }
+    for(std::size_t r = 0; r < n; ++r){
+        if(matrix_[r][col] < min_w && matrix_[r][col] != INF && r != row){
+            min_w = matrix_[r][col];
+        }
+    }
+    if(min_w == INF) return 0;
+    if(min_k == INF) return 0;
+    return min_w + min_k;
 }
 
 /* PART 2 */

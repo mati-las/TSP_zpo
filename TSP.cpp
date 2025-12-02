@@ -24,7 +24,9 @@ std::ostream& operator<<(std::ostream& os, const CostMatrix& cm) {
  * @return The vector of consecutive vertex.
  */
 path_t StageState::get_path() {
-    throw;  // TODO: Implement it!
+  for(auto& x : unsorted_path_) {
+
+  }
 }
 
 /**
@@ -94,7 +96,7 @@ cost_t CostMatrix::reduce_cols() {
     std::size_t k = matrix_[0].size();
     for(size_t i =0; i<k; ++i){
         for(size_t j=0; j<w; ++j){
-          if(!is_inf(matrix_[i][j]) matrix_[i][j] -= min[i];
+          if(!is_inf(matrix_[i][j])) matrix_[i][j] -= min[i];
         }
     }
     cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));
@@ -108,7 +110,7 @@ cost_t CostMatrix::reduce_cols() {
  * @return The sum of minimal values in row and col, excluding the intersection value.
  */
 cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
-    std::size_t n = size();
+    std::size_t n = matrix_.size();
     cost_t min_w = INF;
     cost_t min_k = INF;
 
@@ -119,7 +121,7 @@ cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
     }
     for(std::size_t r = 0; r < n; ++r){
         if(matrix_[r][col] < min_w && matrix_[r][col] != INF && r != row){
-            min_w = matrix_[r][col];
+            min_k = matrix_[r][col];
         }
     }
     if(min_w == INF) return 0;
@@ -138,7 +140,21 @@ cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
  * @return The coordinates of the next vertex.
  */
 NewVertex StageState::choose_new_vertex() {
-    throw;  // TODO: Implement it!
+    cost_t max = 0;
+    cost_t current = 0;
+    vertex_t vertex;
+    for (std::size_t r = 0; r < matrix_.size(); ++r) {
+      for (std::size_t c = 0; c < matrix_[0].size(); ++c) {
+        if(matrix_[r][c] == 0) {
+          current = matrix_.get_vertex_cost(r,c);
+          if (current >= max && current != INF) {
+            max = current;
+            vertex = {r, c};
+          }
+        }
+      }
+    }
+    return vertex;
 }
 
 /**
@@ -146,7 +162,9 @@ NewVertex StageState::choose_new_vertex() {
  * @param new_vertex
  */
 void StageState::update_cost_matrix(vertex_t new_vertex) {
-    throw;  // TODO: Implement it!
+    for(std::size_t r = 0; r < matrix_.size(); ++r) matrix_[r][new_vertex.col] = INF;
+    for(std::size_t c = 0; c < matrix_[0].size(); ++c) matrix_[new_vertex.row][c] = INF;
+    matrix_[new_vertex.col][new_vertex.row] = INF;
 }
 
 /**
@@ -154,7 +172,9 @@ void StageState::update_cost_matrix(vertex_t new_vertex) {
  * @return The sum of reduced values.
  */
 cost_t StageState::reduce_cost_matrix() {
-    throw;  // TODO: Implement it!
+    cost_t rows = matrix_.reduce_rows();
+    cost_t cols = matrix_.reduce_cols();
+    return rows+cols;
 }
 
 /**

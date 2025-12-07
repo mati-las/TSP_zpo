@@ -1,8 +1,10 @@
 #include "TSP.hxx"
-
+#include "tsp_setup.hxx"
 #include <algorithm>
 #include <stack>
-#include <optional>
+#include <unordered_map>
+#include <unordered_set>
+#include <numeric>
 
 std::ostream& operator<<(std::ostream& os, const CostMatrix& cm) {
     for (std::size_t r = 0; r < cm.size(); ++r) {
@@ -12,286 +14,228 @@ std::ostream& operator<<(std::ostream& os, const CostMatrix& cm) {
         }
         os << "\n";
     }
-    os << std::endl;
-
     return os;
 }
 
 /* PART 1 */
-
-/**
- * Create path from unsorted path and last 2x2 cost matrix.
- * @return The vector of consecutive vertex.
- */
 path_t StageState::get_path() {
-  for(auto& x : unsorted_path_) {
+    std::vector<vertex_t> edges = unsorted_path_;
 
-  }
-}
-
-/**
- * Get minimum values from each row and returns them.
- * @return Vector of minimum values in row.
- */
-std::vector<cost_t> CostMatrix::get_min_values_in_rows() const {
-    std::size_t n = size();
-    std::vector<cost_t> min_values(n);
-
-    for (std::size_t c = 0; c < n; ++c) {
-        cost_t mn = INF;
-        for (std::size_t r = 0; r < n; ++r) {
-            if (!is_inf(matrix_[r][c]) && matrix_[r][c] < mn){
-                mn = matrix_[c][r];
-            }
-        }
-        min_values[c] = (mn == INF) ? 0 : mn;
-        }
-        return min_values;
-}
-
-/**
- * Reduce rows so that in each row at least one zero value is present.
- * @return Sum of values reduced in rows.
- */
-cost_t CostMatrix::reduce_rows() {
-    std::vector<cost_t> min = get_min_values_in_rows();
-    std::size_t w = size();
-    std::size_t k = matrix_[0].size();
-    for(size_t i =0; i<w; ++i){
-      for(size_t j=0; j<k; ++j){
-        if (!is_inf(matrix_[i][j])) matrix_[i][j] -= min[i];
-      }
-    }
-    cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));
-    return lb;
-}
-
-/**
- * Get minimum values from each column and returns them.
- * @return Vector of minimum values in columns.
- */
-std::vector<cost_t> CostMatrix::get_min_values_in_cols() const {
-    std::size_t n = size();
-    std::vector<cost_t> min_values(n);
-
-    for (std::size_t c = 0; c < n; ++c) {
-        cost_t mn = INF;
-        for (std::size_t r = 0; r < n; ++r) {
-            if (!is_inf(matrix_[r][c]) && matrix_[r][c] < mn) {
-                mn = matrix_[r][c];
-            }
-        }
-        min_values[c] = (mn == INF) ? 0 : mn;
-    }
-    return min_values;
-}
-
-/**
- * Reduces rows so that in each column at least one zero value is present.
- * @return Sum of values reduced in columns.
- */
-cost_t CostMatrix::reduce_cols() {
-    std::vector<cost_t> min = get_min_values_in_cols();
-    std::size_t w = size();
-    std::size_t k = matrix_[0].size();
-    for(size_t i =0; i<k; ++i){
-        for(size_t j=0; j<w; ++j){
-          if(!is_inf(matrix_[i][j])) matrix_[i][j] -= min[i];
-        }
-    }
-    cost_t lb = std::accumulate(min.begin(), min.end(), cost_t(0));
-    return lb;
-}
-
-/**
- * Get the cost of not visiting the vertex_t (@see: get_new_vertex())
- * @param row
- * @param col
- * @return The sum of minimal values in row and col, excluding the intersection value.
- */
-cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
-    std::size_t n = matrix_.size();
-    cost_t min_w = INF;
-    cost_t min_k = INF;
-
-    for(std::size_t c = 0; c < n; ++c){
-      if(matrix_[row][c] < min_w && matrix_[row][c] != INF && c != col){
-        min_w = matrix_[row][c];
-      }
-    }
-    for(std::size_t r = 0; r < n; ++r){
-        if(matrix_[r][col] < min_w && matrix_[r][col] != INF && r != row){
-            min_k = matrix_[r][col];
-        }
-    }
-    if(min_w == INF) return 0;
-    if(min_k == INF) return 0;
-    return min_w + min_k;
-}
-
-/* PART 2 */
-
-/**
- * Choose next vertex to visit:
- * - Look for vertex_t (pair row and column) with value 0 in the current cost matrix.
- * - Get the vertex_t cost (calls get_vertex_cost()).
- * - Choose the vertex_t with maximum cost and returns it.
- * @param cm
- * @return The coordinates of the next vertex.
- */
-NewVertex StageState::choose_new_vertex() {
-    cost_t max = 0;
-    cost_t current = 0;
-    vertex_t vertex;
     for (std::size_t r = 0; r < matrix_.size(); ++r) {
-      for (std::size_t c = 0; c < matrix_[0].size(); ++c) {
-        if(matrix_[r][c] == 0) {
-          current = matrix_.get_vertex_cost(r,c);
-          if (current >= max && current != INF) {
-            max = current;
-            vertex = {r, c};
-          }
+        for (std::size_t c = 0; c < matrix_.size(); ++c) {
+            if (matrix_[r][c] != INF) {
+                edges.push_back({r, c});
+            }
         }
-      }
     }
-    return vertex;
+
+    std::vector<std::size_t> next_vertex(matrix_.size());
+    for (const auto& edge : edges) {
+        next_vertex[edge.row] = edge.col;
+    }
+
+    path_t sorted_path;
+    if (edges.empty()) return sorted_path;
+
+    std::size_t current = 0;
+    for (std::size_t i = 0; i < matrix_.size(); ++i) {
+        sorted_path.push_back(current);
+        current = next_vertex[current];
+    }
+
+    return sorted_path;
 }
 
-/**
- * Update the cost matrix with the new vertex.
- * @param new_vertex
- */
-void StageState::update_cost_matrix(vertex_t new_vertex) {
-    for(std::size_t r = 0; r < matrix_.size(); ++r) matrix_[r][new_vertex.col] = INF;
-    for(std::size_t c = 0; c < matrix_[0].size(); ++c) matrix_[new_vertex.row][c] = INF;
-    matrix_[new_vertex.col][new_vertex.row] = INF;
+/* Minimalne wartości w wierszach */
+std::vector<cost_t> CostMatrix::get_min_values_in_rows() const {
+    std::vector<cost_t> row_mins;
+    row_mins.reserve(matrix_.size());
+
+    for (const auto& row : matrix_) {
+        if (row.empty()) {
+            row_mins.push_back(0);
+            continue;
+        }
+        auto min_it = std::min_element(row.begin(), row.end());
+        cost_t min_val = *min_it;
+        if (min_val == INF) min_val = 0;
+        row_mins.push_back(min_val);
+    }
+
+    return row_mins;
 }
 
-/**
- * Reduce the cost matrix.
- * @return The sum of reduced values.
- */
+/* Redukcja wierszy */
+cost_t CostMatrix::reduce_rows() {
+    cost_t reduction_sum = 0;
+    auto row_mins = get_min_values_in_rows();
+
+    for (std::size_t r = 0; r < row_mins.size(); ++r) {
+        if (row_mins[r] == 0 || row_mins[r] == INF) continue;
+        reduction_sum += row_mins[r];
+        for (auto& val : matrix_[r]) {
+            if (val != INF) val -= row_mins[r];
+        }
+    }
+    return reduction_sum;
+}
+
+/* Minimalne wartości w kolumnach */
+std::vector<cost_t> CostMatrix::get_min_values_in_cols() const {
+    std::vector<cost_t> col_mins;
+
+    if (matrix_.empty() || matrix_[0].empty()) return {};
+
+    std::size_t n_rows = matrix_.size();
+    std::size_t n_cols = matrix_[0].size();
+    col_mins.reserve(n_cols);
+
+    for (std::size_t col = 0; col < n_cols; ++col) {
+        cost_t min_val = matrix_[0][col];
+        for (std::size_t row = 1; row < n_rows; ++row) {
+            if (matrix_[row][col] < min_val) min_val = matrix_[row][col];
+        }
+        if (min_val == INF) min_val = 0;
+        col_mins.push_back(min_val);
+    }
+
+    return col_mins;
+}
+
+/* Redukcja kolumn */
+cost_t CostMatrix::reduce_cols() {
+    cost_t reduction_sum = 0;
+    auto col_mins = get_min_values_in_cols();
+
+    for (std::size_t col = 0; col < col_mins.size(); ++col) {
+        if (col_mins[col] == 0 || col_mins[col] == INF) continue;
+        reduction_sum += col_mins[col];
+        for (std::size_t row = 0; row < matrix_.size(); ++row) {
+            if (matrix_[row][col] != INF) matrix_[row][col] -= col_mins[col];
+        }
+    }
+
+    return reduction_sum;
+}
+
+/* Koszt nieodwiedzenia wierzchołka */
+cost_t CostMatrix::get_vertex_cost(std::size_t row, std::size_t col) const {
+    cost_t min_row = INF;
+    cost_t min_col = INF;
+
+    for (std::size_t r = 0; r < matrix_.size(); ++r) {
+        if (r != row && matrix_[r][col] != INF && matrix_[r][col] < min_col) min_col = matrix_[r][col];
+    }
+    for (std::size_t c = 0; c < matrix_.size(); ++c) {
+        if (c != col && matrix_[row][c] != INF && matrix_[row][c] < min_row) min_row = matrix_[row][c];
+    }
+
+    if (min_row == INF) min_row = 0;
+    if (min_col == INF) min_col = 0;
+
+    return min_row + min_col;
+}
+
+/* ----------------------- PART 2: Algorytm TSP ----------------------- */
+
+/* Wybór kolejnego wierzchołka */
+NewVertex StageState::choose_new_vertex() {
+    vertex_t selected_vertex{0, 0};
+    cost_t max_cost = -1;
+
+    for (std::size_t r = 0; r < matrix_.size(); ++r) {
+        for (std::size_t c = 0; c < matrix_.size(); ++c) {
+            if (matrix_[r][c] == 0) {
+                cost_t vertex_cost = matrix_.get_vertex_cost(r, c);
+                if (vertex_cost > max_cost) {
+                    max_cost = vertex_cost;
+                    selected_vertex = {r, c};
+                }
+            }
+        }
+    }
+
+    return NewVertex(selected_vertex, max_cost);
+}
+
+/* Aktualizacja macierzy kosztów po wybraniu wierzchołka */
+void StageState::update_cost_matrix(vertex_t chosen) {
+    for (std::size_t r = 0; r < matrix_.size(); ++r) matrix_[r][chosen.col] = INF;
+    for (std::size_t c = 0; c < matrix_.size(); ++c) matrix_[chosen.row][c] = INF;
+    matrix_[chosen.col][chosen.row] = INF;
+}
+
+/* Redukcja macierzy kosztów */
 cost_t StageState::reduce_cost_matrix() {
-    cost_t rows = matrix_.reduce_rows();
-    cost_t cols = matrix_.reduce_cols();
-    return rows+cols;
+    return matrix_.reduce_rows() + matrix_.reduce_cols();
 }
 
-/**
- * Given the optimal path, return the optimal cost.
- * @param optimal_path
- * @param m
- * @return Cost of the path.
- */
-cost_t get_optimal_cost(const path_t& optimal_path, const cost_matrix_t& m) {
-    cost_t cost = 0;
-
-    for (std::size_t idx = 1; idx < optimal_path.size(); ++idx) {
-        cost += m[optimal_path[idx - 1]][optimal_path[idx]];
-    }
-
-    // Add the cost of returning from the last city to the initial one.
-    cost += m[optimal_path[optimal_path.size() - 1]][optimal_path[0]];
-
-    return cost;
+/* Koszt całkowity dla optymalnej ścieżki */
+cost_t get_optimal_cost(const path_t& path, const cost_matrix_t& matrix) {
+    cost_t total_cost = 0;
+    for (std::size_t i = 1; i < path.size(); ++i) total_cost += matrix[path[i-1]][path[i]];
+    total_cost += matrix[path.back()][path[0]];
+    return total_cost;
 }
 
-/**
- * Create the right branch matrix with the chosen vertex forbidden and the new lower bound.
- * @param m
- * @param v
- * @param lb
- * @return New branch.
- */
-StageState create_right_branch_matrix(cost_matrix_t m, vertex_t v, cost_t lb) {
-    CostMatrix cm(m);
-    cm[v.row][v.col] = INF;
-    return StageState(cm, {}, lb);
+/* Utworzenie gałęzi prawej (z zabronionym wierzchołkiem) */
+StageState create_right_branch_matrix(CostMatrix matrix, vertex_t vertex, cost_t lb, unsorted_path_t path) {
+    matrix[vertex.row][vertex.col] = INF;
+    return StageState(matrix, path, lb);
 }
 
-/**
- * Retain only optimal ones (from all possible ones).
- * @param solutions
- * @return Vector of optimal solutions.
- */
+/* Zachowanie tylko optymalnych rozwiązań */
 tsp_solutions_t filter_solutions(tsp_solutions_t solutions) {
-    cost_t optimal_cost = INF;
-    for (const auto& s : solutions) {
-        optimal_cost = (s.lower_bound < optimal_cost) ? s.lower_bound : optimal_cost;
-    }
+    cost_t best_cost = INF;
+    for (const auto& sol : solutions) best_cost = std::min(best_cost, sol.lower_bound);
 
-    tsp_solutions_t optimal_solutions;
-    std::copy_if(solutions.begin(), solutions.end(),
-                 std::back_inserter(optimal_solutions),
-                 [&optimal_cost](const tsp_solution_t& s) { return s.lower_bound == optimal_cost; }
-    );
-
-    return optimal_solutions;
+    tsp_solutions_t filtered;
+    std::copy_if(solutions.begin(), solutions.end(), std::back_inserter(filtered),
+                 [best_cost](const tsp_solution_t& sol) { return sol.lower_bound == best_cost; });
+    return filtered;
 }
 
-/**
- * Solve the TSP.
- * @param cm The cost matrix.
- * @return A list of optimal solutions.
- */
+/* Rozwiązanie problemu TSP */
 tsp_solutions_t solve_tsp(const cost_matrix_t& cm) {
-
-    StageState left_branch(cm);
-
-    // The branch & bound tree.
-    std::stack<StageState> tree_lifo;
-
-    // The number of levels determines the number of steps before obtaining
-    // a 2x2 matrix.
-    std::size_t n_levels = cm.size() - 2;
-
-    tree_lifo.push(left_branch);   // Use the first cost matrix as the root.
+    StageState branch(cm);
+    std::stack<StageState> stack;
+    stack.push(branch);
 
     cost_t best_lb = INF;
     tsp_solutions_t solutions;
+    std::size_t final_level = cm.size() - 2;
 
-    while (!tree_lifo.empty()) {
+    while (!stack.empty()) {
+        branch = stack.top();
+        stack.pop();
 
-        left_branch = tree_lifo.top();
-        tree_lifo.pop();
+        while (branch.get_level() != final_level && branch.get_lower_bound() <= best_lb) {
+            if (branch.get_level() == 0) branch.reset_lower_bound();
 
-        while (left_branch.get_level() != n_levels && left_branch.get_lower_bound() <= best_lb) {
-            // Repeat until a 2x2 matrix is obtained or the lower bound is too high...
+            cost_t reduction_cost = branch.reduce_cost_matrix();
+            branch.update_lower_bound(reduction_cost);
+            if (branch.get_lower_bound() > best_lb) break;
 
-            if (left_branch.get_level() == 0) {
-                left_branch.reset_lower_bound();
-            }
+            NewVertex next_vertex = branch.choose_new_vertex();
 
-            // 1. Reduce the matrix in rows and columns.
-            cost_t new_cost = 0; // @TODO (KROK 1)
+            CostMatrix prev_matrix = branch.get_matrix();
+            unsorted_path_t prev_path = branch.get_unsorted_path();
+            branch.append_to_path(next_vertex.coordinates);
+            branch.update_cost_matrix(next_vertex.coordinates);
 
-            // 2. Update the lower bound and check the break condition.
-            left_branch.update_lower_bound(new_cost);
-            if (left_branch.get_lower_bound() > best_lb) {
-                break;
-            }
+            cost_t right_branch_lb = (branch.get_lower_bound() == INF || next_vertex.cost == INF)
+                                     ? INF
+                                     : branch.get_lower_bound() + next_vertex.cost;
 
-            // 3. Get new vertex and the cost of not choosing it.
-            NewVertex new_vertex = NewVertex(); // @TODO (KROK 2)
-
-            // 4. @TODO Update the path - use append_to_path method.
-
-            // 5. @TODO (KROK 3) Update the cost matrix of the left branch.
-
-            // 6. Update the right branch and push it to the LIFO.
-            cost_t new_lower_bound = left_branch.get_lower_bound() + new_vertex.cost;
-            tree_lifo.push(create_right_branch_matrix(cm, new_vertex.coordinates,
-                                                      new_lower_bound));
+            stack.push(create_right_branch_matrix(prev_matrix, next_vertex.coordinates, right_branch_lb, prev_path));
         }
 
-        if (left_branch.get_lower_bound() <= best_lb) {
-            // If the new solution is at least as good as the previous one,
-            // save its lower bound and its path.
-            best_lb = left_branch.get_lower_bound();
-            path_t new_path = left_branch.get_path();
-            solutions.push_back({get_optimal_cost(new_path, cm), new_path});
+        if (branch.get_lower_bound() <= best_lb) {
+            best_lb = branch.get_lower_bound();
+            path_t complete_path = branch.get_path();
+            solutions.push_back({get_optimal_cost(complete_path, cm), complete_path});
         }
     }
 
-    return filter_solutions(solutions); // Filter solutions to find only optimal ones.
+    return filter_solutions(solutions);
 }
